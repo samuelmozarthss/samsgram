@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'home_store.dart';
+part of 'login_store.dart';
 
 // **************************************************************************
 // StoreGenerator
@@ -8,8 +8,8 @@ part of 'home_store.dart';
 
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
-mixin _$HomeStore on HomeStoreBase, Store {
-  final _$userAtom = Atom(name: 'HomeStoreBase.user');
+mixin _$LoginStore on _LoginStoreBase, Store {
+  final _$userAtom = Atom(name: '_LoginStoreBase.user');
 
   @override
   User? get user {
@@ -24,31 +24,40 @@ mixin _$HomeStore on HomeStoreBase, Store {
     });
   }
 
-  final _$logoffAsyncAction = AsyncAction('HomeStoreBase.logoff');
+  final _$loadingAtom = Atom(name: '_LoginStoreBase.loading');
 
   @override
-  Future<void> logoff() {
-    return _$logoffAsyncAction.run(() => super.logoff());
+  bool get loading {
+    _$loadingAtom.reportRead();
+    return super.loading;
   }
 
-  final _$HomeStoreBaseActionController =
-      ActionController(name: 'HomeStoreBase');
+  @override
+  set loading(bool value) {
+    _$loadingAtom.reportWrite(value, super.loading, () {
+      super.loading = value;
+    });
+  }
+
+  final _$_LoginStoreBaseActionController =
+      ActionController(name: '_LoginStoreBase');
 
   @override
   void _onAuthChange(User? user) {
-    final _$actionInfo = _$HomeStoreBaseActionController.startAction(
-        name: 'HomeStoreBase._onAuthChange');
+    final _$actionInfo = _$_LoginStoreBaseActionController.startAction(
+        name: '_LoginStoreBase._onAuthChange');
     try {
       return super._onAuthChange(user);
     } finally {
-      _$HomeStoreBaseActionController.endAction(_$actionInfo);
+      _$_LoginStoreBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   String toString() {
     return '''
-user: ${user}
+user: ${user},
+loading: ${loading}
     ''';
   }
 }

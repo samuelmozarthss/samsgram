@@ -1,9 +1,16 @@
- import 'package:flutter_modular/flutter_modular.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:samsgram/app/modules/register/register_store.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:samsgram/app/modules/register/register_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterModule extends Module {
   @override
-  final List<Bind> binds = [];
+  final List<Bind> binds = [
+    Bind.lazySingleton((i) => RegisterStore(
+        firebaseAuth: i.get<FirebaseAuth>(),
+        sharedPreferences: i.get<SharedPreferences>())),
+  ];
 
   @override
   final List<ModularRoute> routes = [
@@ -12,5 +19,4 @@ class RegisterModule extends Module {
       child: (context, args) => RegisterPage(),
     )
   ];
-
 }
