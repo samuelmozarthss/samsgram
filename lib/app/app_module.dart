@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:samsgram/app/modules/modules_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,19 +21,17 @@ class AppModule extends Module {
         Bind.singleton((i) => _sharedPreferences),
         Bind.instance(_firebaseApp),
         Bind.factory((i) => FirebaseAuth.instance),
+        Bind.factory((i) => FirebaseFirestore.instance),
       ];
 
   @override
   late final List<ModularRoute> routes = [
     /*Modular.initialRoute é o mesmo que uma barra '/'*/
     ModuleRoute('/', module: _initialModule()),
-    ModuleRoute(Constants.Routes.HOME,
-        module: HomeModule(), guards: [_FirebaseAuthGuard()]),
+    ModuleRoute(Constants.Routes.HOME, module: HomeModule(), guards: [_FirebaseAuthGuard()]),
     ModuleRoute(Constants.Routes.ONBOARDING, module: OnboardingModule()),
-    ModuleRoute(Constants.Routes.REGISTER,
-        module: RegisterModule(), transition: TransitionType.rotate),
-    ModuleRoute(Constants.Routes.LOGIN,
-        module: LoginModule(), transition: TransitionType.scale),
+    ModuleRoute(Constants.Routes.REGISTER, module: RegisterModule(), transition: TransitionType.rotate),
+    ModuleRoute(Constants.Routes.LOGIN, module: LoginModule(), transition: TransitionType.scale),
   ];
 
   Module _initialModule() {
@@ -62,7 +61,6 @@ class _FirebaseAuthGuard extends RouteGuard {
 
   @override
   Future<bool> canActivate(String path, ModularRoute router) {
-    return Future.value(
-        !(FirebaseAuth.instance.currentUser?.isAnonymous ?? true));
+    return Future.value(!(FirebaseAuth.instance.currentUser?.isAnonymous ?? true));
   }
 }

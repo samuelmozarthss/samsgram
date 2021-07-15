@@ -98,7 +98,7 @@ class LoginPageState extends ModularState<LoginPage, LoginStore> {
             TextButton(
               child: Text('Esqueceu a senha?'),
               onPressed: () {
-                Modular.to.pushNamed(Constants.Routes.FORGOT_PASSWORD);
+                Modular.to.pushNamed(Constants.Routes.LOGIN + Constants.Routes.FORGOT_PASSWORD);
               },
             ),
           ],

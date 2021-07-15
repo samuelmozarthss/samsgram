@@ -39,6 +39,15 @@ mixin _$LoginStore on _LoginStoreBase, Store {
     });
   }
 
+  final _$resetPasswordAsyncAction =
+      AsyncAction('_LoginStoreBase.resetPassword');
+
+  @override
+  Future<void> resetPassword({required String withEmail}) {
+    return _$resetPasswordAsyncAction
+        .run(() => super.resetPassword(withEmail: withEmail));
+  }
+
   final _$_LoginStoreBaseActionController =
       ActionController(name: '_LoginStoreBase');
 

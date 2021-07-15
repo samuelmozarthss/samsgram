@@ -13,4 +13,9 @@ class _Routes {
   final REGISTER = '/register';
   final LOGIN = '/login';
   final FORGOT_PASSWORD = '/login/forgot_password';
+
+  final FEED = '/feed';
+  final SEARCH = '/search';
+  final PROFILE = '/profile';
+  final EDIT_PROFILE = '/edit';
 }
