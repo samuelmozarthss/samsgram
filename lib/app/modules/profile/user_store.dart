@@ -1,6 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
 part 'user_store.g.dart';
 
@@ -9,7 +12,13 @@ abstract class _UserStoreBase with Store {
 
   FirebaseAuth firebaseAuth;
   FirebaseFirestore firebaseFirestore;
-  _UserStoreBase(this.firebaseAuth, this.firebaseFirestore) {
+  FirebaseStorage firebaseStorage;
+  _UserStoreBase({
+        required this.firebaseAuth,
+        required this.firebaseFirestore,
+        required this.firebaseStorage
+      })
+  {
     firebaseAuth.userChanges().listen(_onUserChange);
   }
 
@@ -25,6 +34,14 @@ abstract class _UserStoreBase with Store {
   @observable
   FirebaseException? error;
 
+  @computed
+  Stream<QuerySnapshot> get posts {
+    return firebaseFirestore.collection('post')
+        .where('userId', isEqualTo: firebaseAuth.currentUser!.uid)
+        .orderBy('dateTime', descending: true)
+        .snapshots();
+  }
+
   @action
   void _onUserChange(User? user) {
     this.user = user;
@@ -38,6 +55,24 @@ abstract class _UserStoreBase with Store {
     if (snapshot.exists) {
       bio = snapshot.data()?['bio'] as String;
     }
+  }
+
+  Future<void> updateProfilePicture(String filePatch) async{
+    loading = true;
+
+    final userRef = firebaseFirestore.doc('user/${user!.uid}');
+
+    final file = File(filePatch);
+    final task = await firebaseStorage.ref('{$user!.uid}/profilePicture.jpg').putFile(file);
+    final url = await task.ref.getDownloadURL();
+
+    await userRef.set({
+      'profilePicture' : url
+    }, SetOptions(merge: true));
+
+    firebaseAuth.currentUser!.updatePhotoURL(url);
+
+    loading = false;
   }
 
   @action
@@ -60,5 +95,25 @@ abstract class _UserStoreBase with Store {
       log('Erro ao salvar edição de perfil', error: e);
     }
   }
+
+  @action
+  Future<void> postPicture(String filePath) async {
+    loading = true;
+
+    final file = File(filePath);
+    final task = await firebaseStorage
+        .ref('${user!.uid}/uploads/post_${DateTime.now().millisecondsSinceEpoch}.jpg')
+        .putFile(file);
+    final url = await task.ref.getDownloadURL();
+
+    await firebaseFirestore.collection('post').add({
+      'userId': user!.uid,
+      'dateTime': DateTime.now(),
+      'url': url
+    });
+
+    loading = false;
+  }
+
 }
 

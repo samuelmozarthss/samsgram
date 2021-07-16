@@ -1,6 +1,11 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:samsgram/app/constants.dart';
 import 'package:samsgram/app/modules/profile/padding_widget.dart';
 import 'package:samsgram/app/modules/profile/user_store.dart';
@@ -11,6 +16,15 @@ class ProfilePage extends StatefulWidget {
   ProfilePageState createState() => ProfilePageState();
 }
 class ProfilePageState extends ModularState<ProfilePage, UserStore> {
+
+  late final ImagePicker _picker;
+
+  @override
+  void initState() {
+    super.initState();
+    _picker = ImagePicker();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,17 +33,85 @@ class ProfilePageState extends ModularState<ProfilePage, UserStore> {
           return Text(store.user?.displayName ?? 'Sem nome');
         }),
         actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.add_box_outlined)
-          ),
+          Observer(builder: (_) {
+            if (store.loading) {
+              return Container(
+                child: Center(
+                  child: Transform.scale(
+                    scale: 0.5,
+                    child: CircularProgressIndicator(color: Theme.of(context).buttonColor),
+                  ),
+                ),
+              );
+            }
+            return IconButton(
+              icon: Icon(Icons.add_box_outlined),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (ctx) {
+                  return Container(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        InkWell(
+                          child:  Row(
+                            children: [
+                              Icon(Icons.camera_alt_outlined),
+                              SizedBox(width: 16),
+                              Text('Tirar foto')
+                            ],
+                          ),
+                          onTap: () async {
+                            final pickedFile = await _picker.getImage(
+                              source: ImageSource.camera,
+                              imageQuality: 50,
+                              maxWidth: 1920,
+                              maxHeight: 1200,
+                            );
+                            if (pickedFile != null) {
+                              store.postPicture(pickedFile.path);
+                            }
+                            Navigator.of(ctx).pop();
+                          },
+                        ),
+                        SizedBox(height: 24),
+                        InkWell(
+                          child:  Row(
+                            children: [
+                              Icon(Icons.photo_library_outlined),
+                              SizedBox(width: 16),
+                              Text('Escolher foto')
+                            ],
+                          ),
+                          onTap: () async{
+                            final pickedFile = await _picker.getImage(
+                              source: ImageSource.gallery,
+                              imageQuality: 50,
+                              maxWidth: 1920,
+                              maxHeight: 1200,
+                            );
+                            if (pickedFile != null) {
+                              store.postPicture(pickedFile.path);
+                            }
+                            Navigator.of(ctx).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                });
+              });
+          }
+          )
         ],
       ),
       body: ListView(
         children: <Widget>[
          _UserHeader(store),
          _UserSubHeading(store),
-         _UserGallery(),
+         _UserGallery(store),
 
         ],
       ),
@@ -52,6 +134,21 @@ class _UserHeader extends StatelessWidget {
           CircleAvatar(
             radius: 40,
             child: CircleAvatar(
+              child: Observer(
+                builder: (_) {
+                  if (store.user?.photoURL != null && store.user!.photoURL!.isNotEmpty) {
+                    return CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(store.user!.photoURL!),
+                    );
+                  }
+                  return CircleAvatar(
+                    radius: 40,
+                    backgroundImage: AssetImage('assets/profilep.jpg'),
+                  );
+                },
+
+              ),
               backgroundImage: AssetImage('assets/profilep.jpg'),
               radius: 38,
               backgroundColor: Colors.purple,
@@ -115,32 +212,44 @@ class _UserSubHeading extends StatelessWidget {
 }
 
 class _UserGallery extends StatelessWidget {
+
+  final UserStore store;
+  _UserGallery(this.store);
+
   @override
   Widget build(BuildContext context) {
-   return PaddingWidget(
-     child: GridView.count(
-       crossAxisCount: 3,
-       mainAxisSpacing: 2,
-       crossAxisSpacing: 1,
-       physics: NeverScrollableScrollPhysics(),
-       childAspectRatio: 1,
-       shrinkWrap: true,
-       children: [
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-         Image.network('http://lorempixel.com.br/300/300/?${DateTime.now().microsecondsSinceEpoch}', height: 100, width: 100,),
-       ],
-     ),
-   );
+    return PaddingWidget(
+        child: StreamBuilder(
+          stream: store.posts,
+          builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              log('Erro ao carregar: ${snapshot.error}');
+              print(snapshot);
+              return Text('Deu erro');
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.hasData && snapshot.data!.docs.length > 0) {
+              final posts = snapshot.data!.docs;
+              return GridView.count(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 1,
+                  crossAxisSpacing: 1,
+                  childAspectRatio: 1,
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  children: posts.map((post) {
+                    final data = post.data() as Map<String, dynamic>;
+                    return Image.network(data['url'] as String, fit: BoxFit.cover);
+                  }).toList()
+              );
+            }
+            return Container();
+          },
+        )
+    );
   }
 }

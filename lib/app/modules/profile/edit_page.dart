@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobx/mobx.dart';
 import 'package:samsgram/app/modules/profile/padding_widget.dart';
 import 'package:samsgram/app/modules/profile/user_store.dart';
@@ -19,6 +21,8 @@ class EditPageState extends ModularState<EditPage, UserStore> {
   late final FocusNode _nameFocusNode;
   late final FocusNode _bioFocusNode;
 
+  late final ImagePicker _picker;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +39,8 @@ class EditPageState extends ModularState<EditPage, UserStore> {
     reaction((_) => store.bio, (_) {
       _bioController.text = store.bio ?? '';
     });
+
+    _picker = ImagePicker();
   }
 
   @override
@@ -43,60 +49,124 @@ class EditPageState extends ModularState<EditPage, UserStore> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          Observer(
-              builder: (_) {
-                if (store.loading) {
-                  return Container(
-                    padding: EdgeInsets.only(right: 16),
-                    child: Center(
-                      child: CircularProgressIndicator(color: Theme.of(context).buttonColor,),
-                    ),
-                  );
+          Observer(builder: (_) {
+            if (store.loading) {
+              return Container(
+                padding: EdgeInsets.only(right: 12),
+                child: Center(
+                  child: Transform.scale(
+                    scale: 0.5,
+                    child: CircularProgressIndicator(color: Theme.of(context).buttonColor),
+                  ),
+                ),
+              );
+            }
+            return TextButton(
+              child: Text('Concluir', style: TextStyle(color: Theme.of(context).buttonColor, fontWeight: FontWeight.bold)),
+              onPressed: () {
+                if (_nameController.text.isNotEmpty) {
+                  store.updateProfile(
+                      displayName: _nameController.text,
+                      bio: _bioController.text
+                  ).then((_) => Navigator.of(context).pop());
                 }
-                return TextButton(
-                    child: Text('Salvar', style: TextStyle(color: Theme.of(context).buttonColor),),
-                    onPressed: () {
-                      if (_nameController.text.isNotEmpty) {
-                      store.updateProfile(
-                        displayName: _nameController.text,
-                        bio: _bioController.text,
-                      ).then((_) => Navigator.of(context).pop());
-                    }
-                  }
-                );
-              }
-            ),
+              },
+            );
+          })
         ],
       ),
       body: ListView(
         children: <Widget>[
-          SizedBox(
-            height: 24,
-          ),
+          SizedBox(height: 24),
           CircleAvatar(
             radius: 40,
-            child: CircleAvatar(
-              backgroundImage: AssetImage('assets/profilep.jpg'),
-              radius: 38,
-              backgroundColor: Colors.purple,
-            ),
+            child: Observer(builder: (_) {
+              if (store.user!.photoURL != null && store.user!.photoURL!.isNotEmpty) {
+                return CircleAvatar(
+                  radius: 38,
+                  backgroundImage: NetworkImage(store.user!.photoURL!),
+                );
+              }
+              return CircleAvatar(
+                radius: 38,
+                backgroundImage: AssetImage('assets/sem_foto.jpg'),
+              );
+            }),
           ),
           TextButton(
-              child: Text('Alterar foto do perfil'),
-              onPressed: () {},
+            child: Text('Alterar foto do perfil'),
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (ctx) {
+                    return Container(
+                      padding: EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          InkWell(
+                            child: Row(
+                              children: [
+                                Icon(Icons.camera_alt_outlined),
+                                SizedBox(width: 16),
+                                Text('Usar Câmera')
+                              ],
+                            ),
+                            onTap: () async {
+                              final picturePath = await _picker.pickImage(
+                                  source: ImageSource.camera,
+                                  imageQuality: 50,
+                                  maxWidth: 1920,
+                                  maxHeight: 1200
+                              );
+                              if (picturePath != null) {
+                                store.updateProfilePicture(picturePath.path);
+                              }
+                              Navigator.of(ctx).pop();
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          InkWell(
+                            child: Row(
+                              children: [
+                                Icon(Icons.photo_library_outlined),
+                                SizedBox(width: 16),
+                                Text('Escolher da biblioteca')
+                              ],
+                            ),
+                            onTap: () async {
+                              final picturePath = await _picker.pickImage(
+                                  source: ImageSource.gallery,
+                                  imageQuality: 50,
+                                  maxWidth: 1920,
+                                  maxHeight: 1200
+                              );
+                              if (picturePath != null) {
+                                store.updateProfilePicture(picturePath.path);
+                              }
+                              Navigator.of(ctx).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+              );
+            },
           ),
           _EditField(
             label: 'Nome:',
             focusNode: _nameFocusNode,
             controller: _nameController,
-            maxLengh: 40,
+            maxLengh: 50,
           ),
           _EditField(
-            label: 'Bio:',
-            focusNode: _bioFocusNode,
-            controller: _bioController,
-            maxLengh: 140,
+              label: 'Bio:',
+              focusNode: _bioFocusNode,
+              controller: _bioController,
+              maxLengh: 140
           ),
+
         ],
       ),
     );

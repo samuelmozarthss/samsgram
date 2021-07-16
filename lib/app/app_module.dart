@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:samsgram/app/modules/modules_store.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -18,11 +18,12 @@ class AppModule extends Module {
 
   @override
   List<Bind> get binds => [
-        Bind.singleton((i) => _sharedPreferences),
-        Bind.instance(_firebaseApp),
-        Bind.factory((i) => FirebaseAuth.instance),
-        Bind.factory((i) => FirebaseFirestore.instance),
-      ];
+    Bind.singleton((i) => _sharedPreferences),
+    Bind.instance(_firebaseApp),
+    Bind.factory((i) => FirebaseAuth.instance),
+    Bind.factory((i) => FirebaseFirestore.instance),
+    Bind.factory((i) => FirebaseStorage.instance),
+  ];
 
   @override
   late final List<ModularRoute> routes = [
@@ -36,9 +37,9 @@ class AppModule extends Module {
 
   Module _initialModule() {
     final onboardingDone =
-        _sharedPreferences.getBool(Constants.SPK_ONBOARDING_DONE) ?? false;
+      _sharedPreferences.getBool(Constants.SPK_ONBOARDING_DONE) ?? false;
     final registerDone =
-        _sharedPreferences.getBool(Constants.SPK_REGISTER_DONE) ?? false;
+      _sharedPreferences.getBool(Constants.SPK_REGISTER_DONE) ?? false;
 
     if (onboardingDone) {
       if (registerDone) {
@@ -50,7 +51,7 @@ class AppModule extends Module {
       } else {
         return RegisterModule();
       }
-    } else {
+      } else {
       return OnboardingModule();
     }
   }
