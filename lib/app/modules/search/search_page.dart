@@ -73,10 +73,10 @@ class SearchPageState extends ModularState<SearchPage, SearchStore> {
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: Row(
                     children: [
-                      /*CircleAvatar(
+                      CircleAvatar(
                         radius: 32,
                         backgroundImage: NetworkImage(user['profilePicture']),
-                      ),*/
+                      ),
                       SizedBox(width: 12),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.start,

@@ -57,17 +57,18 @@ abstract class _UserStoreBase with Store {
     }
   }
 
-  Future<void> updateProfilePicture(String filePatch) async{
+  @action
+  Future<void> updateProfilePicture(String filePath) async {
     loading = true;
 
     final userRef = firebaseFirestore.doc('user/${user!.uid}');
 
-    final file = File(filePatch);
-    final task = await firebaseStorage.ref('{$user!.uid}/profilePicture.jpg').putFile(file);
+    final file = File(filePath);
+    final task = await firebaseStorage.ref('${user!.uid}/profilePicture.jpg').putFile(file);
     final url = await task.ref.getDownloadURL();
 
     await userRef.set({
-      'profilePicture' : url
+      'profilePicture': url
     }, SetOptions(merge: true));
 
     firebaseAuth.currentUser!.updatePhotoURL(url);
