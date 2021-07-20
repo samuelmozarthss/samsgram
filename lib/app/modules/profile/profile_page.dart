@@ -199,11 +199,26 @@ class _UserSubHeading extends StatelessWidget {
               return Text(store.bio ?? '');
             }
           ),
-          ElevatedButton(
-            child: Text('Editar perfil'),
-            onPressed: () {
-              Modular.to.pushNamed('.${Constants.Routes.EDIT_PROFILE}');
-            },
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton.icon(
+                icon: Icon(Icons.edit),
+                label: Text('Editar perfil'),
+                onPressed: () {
+                  Modular.to.pushNamed('.${Constants.Routes.EDIT_PROFILE}');
+                },
+              ),
+              ElevatedButton.icon(
+                icon: Icon(Icons.logout),
+                label: Text('Logoff'),
+                onPressed: () {
+                  store.logoff()
+                    .then((_) => Modular.to.popAndPushNamed(Constants.Routes.LOGIN));
+                },
+              )
+            ],
           )
         ],
       ),

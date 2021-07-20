@@ -8,7 +8,7 @@ import 'package:samsgram/app/modules/register/register_store.dart';
 
 class RegisterPage extends StatefulWidget {
   final String title;
-  const RegisterPage({Key? key, this.title = 'RegisterPage'}) : super(key: key);
+  const RegisterPage({Key? key, this.title = 'Tela de Cadastro'}) : super(key: key);
   @override
   RegisterPageState createState() => RegisterPageState();
 }

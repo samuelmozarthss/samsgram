@@ -77,6 +77,15 @@ mixin _$UserStore on _UserStoreBase, Store {
     });
   }
 
+  final _$updateProfilePictureAsyncAction =
+      AsyncAction('_UserStoreBase.updateProfilePicture');
+
+  @override
+  Future<void> updateProfilePicture(String filePath) {
+    return _$updateProfilePictureAsyncAction
+        .run(() => super.updateProfilePicture(filePath));
+  }
+
   final _$updateProfileAsyncAction =
       AsyncAction('_UserStoreBase.updateProfile');
 
@@ -92,6 +101,13 @@ mixin _$UserStore on _UserStoreBase, Store {
   @override
   Future<void> postPicture(String filePath) {
     return _$postPictureAsyncAction.run(() => super.postPicture(filePath));
+  }
+
+  final _$logoffAsyncAction = AsyncAction('_UserStoreBase.logoff');
+
+  @override
+  Future<void> logoff() {
+    return _$logoffAsyncAction.run(() => super.logoff());
   }
 
   final _$_UserStoreBaseActionController =

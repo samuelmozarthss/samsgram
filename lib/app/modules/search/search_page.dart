@@ -78,13 +78,15 @@ class SearchPageState extends ModularState<SearchPage, SearchStore> {
                         backgroundImage: NetworkImage(user['profilePicture']),
                       ),
                       SizedBox(width: 12),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(user['displayName']),
-                          Text(user['bio'])
-                        ],
+                      Flexible(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(user['displayName']),
+                              Text(user['bio']),
+                            ],
+                          ),
                       )
                     ],
                   ),

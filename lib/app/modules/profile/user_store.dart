@@ -87,7 +87,11 @@ abstract class _UserStoreBase with Store {
       await firebaseFirestore.doc('user/${user!.uid}').set({
         'displayName': displayName,
         'bio': bio
-      });
+        }
+      ,SetOptions(merge: true)
+
+      );
+
 
       await firebaseAuth.currentUser?.updateDisplayName(displayName);
       loading = false;
@@ -114,6 +118,11 @@ abstract class _UserStoreBase with Store {
     });
 
     loading = false;
+  }
+
+  @action
+  Future<void> logoff() async {
+    return firebaseAuth.signOut();
   }
 
 }
