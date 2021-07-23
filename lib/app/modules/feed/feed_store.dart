@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobx/mobx.dart';
 
+
 part 'feed_store.g.dart';
 
 class FeedStore = _FeedStoreBase with _$FeedStore;
@@ -18,6 +19,12 @@ abstract class _FeedStoreBase with Store {
   Stream<QuerySnapshot> get posts {
     return firebaseFirestore.collection('post')
       .orderBy('dateTime', descending: true)
+      .snapshots();
+  }
+
+  @computed
+  Stream<QuerySnapshot> get users {
+    return firebaseFirestore.collection('user')
       .snapshots();
   }
 

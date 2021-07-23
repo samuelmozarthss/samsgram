@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:samsgram/app/modules/feed/feed_store.dart';
 
+import '../../constants.dart';
+
 class FeedPage extends StatefulWidget {
   final String title;
   const FeedPage({Key? key, this.title = 'FeedPage'}) : super(key: key);
@@ -28,7 +30,9 @@ class FeedPageState extends ModularState<FeedPage, FeedStore> {
         icon: Icon(Icons.favorite_border)
         ),
           IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Modular.to.pushNamed('.${Constants.Routes.CHAT}');
+          },
         icon: Icon(Icons.chat_outlined)
           ),
         ],

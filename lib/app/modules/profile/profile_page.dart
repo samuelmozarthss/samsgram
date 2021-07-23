@@ -156,19 +156,19 @@ class _UserHeader extends StatelessWidget {
           ),
           Column(
             children: [
-              Text('100', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('64', style: TextStyle(fontWeight: FontWeight.bold)),
               Text('Publicações'),
             ],
           ),
           Column(
             children: [
-              Text('100', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('15.197', style: TextStyle(fontWeight: FontWeight.bold)),
               Text('Seguidores'),
             ],
           ),
           Column(
             children: [
-              Text('100', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('423', style: TextStyle(fontWeight: FontWeight.bold)),
               Text('Seguindo'),
             ],
           ),
